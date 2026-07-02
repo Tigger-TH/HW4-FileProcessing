@@ -33,6 +33,11 @@
             this.btBrowse = new System.Windows.Forms.Button();
             this.tabcMain = new System.Windows.Forms.TabControl();
             this.tabpText = new System.Windows.Forms.TabPage();
+            this.lblTextResult = new System.Windows.Forms.Label();
+            this.numTextEnd = new System.Windows.Forms.NumericUpDown();
+            this.lblTextEnd = new System.Windows.Forms.Label();
+            this.numTextStart = new System.Windows.Forms.NumericUpDown();
+            this.lblTextStart = new System.Windows.Forms.Label();
             this.rtbShow = new System.Windows.Forms.RichTextBox();
             this.btRead = new System.Windows.Forms.Button();
             this.tabpCSV = new System.Windows.Forms.TabPage();
@@ -44,24 +49,19 @@
             this.numStartRecord = new System.Windows.Forms.NumericUpDown();
             this.lblStartRecord = new System.Windows.Forms.Label();
             this.dgvData = new System.Windows.Forms.DataGridView();
-            this.RegisterDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SHA256_Hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.MD5_Hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SHA1_Hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btReadCSV = new System.Windows.Forms.Button();
-            this.lblTextStart = new System.Windows.Forms.Label();
-            this.numTextStart = new System.Windows.Forms.NumericUpDown();
-            this.numTextEnd = new System.Windows.Forms.NumericUpDown();
-            this.lblTextEnd = new System.Windows.Forms.Label();
-            this.lblTextResult = new System.Windows.Forms.Label();
+            this.SHA1_Hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MD5_Hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SHA256_Hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RegisterDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabcMain.SuspendLayout();
             this.tabpText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numTextEnd)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTextStart)).BeginInit();
             this.tabpCSV.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numEndRecord)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStartRecord)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTextStart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTextEnd)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -125,6 +125,77 @@
             this.tabpText.TabIndex = 0;
             this.tabpText.Text = "Text";
             this.tabpText.UseVisualStyleBackColor = true;
+            // 
+            // lblTextResult
+            // 
+            this.lblTextResult.AutoSize = true;
+            this.lblTextResult.Location = new System.Drawing.Point(735, 28);
+            this.lblTextResult.Name = "lblTextResult";
+            this.lblTextResult.Size = new System.Drawing.Size(130, 25);
+            this.lblTextResult.TabIndex = 6;
+            this.lblTextResult.Text = "กรุณาเลือกไฟล์";
+            // 
+            // numTextEnd
+            // 
+            this.numTextEnd.Location = new System.Drawing.Point(588, 26);
+            this.numTextEnd.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numTextEnd.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numTextEnd.Name = "numTextEnd";
+            this.numTextEnd.Size = new System.Drawing.Size(120, 31);
+            this.numTextEnd.TabIndex = 5;
+            this.numTextEnd.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // lblTextEnd
+            // 
+            this.lblTextEnd.AutoSize = true;
+            this.lblTextEnd.Location = new System.Drawing.Point(468, 32);
+            this.lblTextEnd.Name = "lblTextEnd";
+            this.lblTextEnd.Size = new System.Drawing.Size(103, 25);
+            this.lblTextEnd.TabIndex = 4;
+            this.lblTextEnd.Text = "End Line:";
+            // 
+            // numTextStart
+            // 
+            this.numTextStart.Location = new System.Drawing.Point(319, 26);
+            this.numTextStart.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numTextStart.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numTextStart.Name = "numTextStart";
+            this.numTextStart.Size = new System.Drawing.Size(120, 31);
+            this.numTextStart.TabIndex = 3;
+            this.numTextStart.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // lblTextStart
+            // 
+            this.lblTextStart.AutoSize = true;
+            this.lblTextStart.Location = new System.Drawing.Point(199, 32);
+            this.lblTextStart.Name = "lblTextStart";
+            this.lblTextStart.Size = new System.Drawing.Size(110, 25);
+            this.lblTextStart.TabIndex = 2;
+            this.lblTextStart.Text = "Start Line:";
             // 
             // rtbShow
             // 
@@ -276,35 +347,6 @@
             this.dgvData.Size = new System.Drawing.Size(1511, 1254);
             this.dgvData.TabIndex = 1;
             // 
-            // RegisterDate
-            // 
-            this.RegisterDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.RegisterDate.HeaderText = "Date";
-            this.RegisterDate.MinimumWidth = 8;
-            this.RegisterDate.Name = "RegisterDate";
-            this.RegisterDate.Width = 102;
-            // 
-            // SHA256_Hash
-            // 
-            this.SHA256_Hash.HeaderText = "SHA256 Hash";
-            this.SHA256_Hash.MinimumWidth = 8;
-            this.SHA256_Hash.Name = "SHA256_Hash";
-            this.SHA256_Hash.Width = 150;
-            // 
-            // MD5_Hash
-            // 
-            this.MD5_Hash.HeaderText = "MD5Hash";
-            this.MD5_Hash.MinimumWidth = 8;
-            this.MD5_Hash.Name = "MD5_Hash";
-            this.MD5_Hash.Width = 150;
-            // 
-            // SHA1_Hash
-            // 
-            this.SHA1_Hash.HeaderText = "SHA1 Hash";
-            this.SHA1_Hash.MinimumWidth = 8;
-            this.SHA1_Hash.Name = "SHA1_Hash";
-            this.SHA1_Hash.Width = 150;
-            // 
             // btReadCSV
             // 
             this.btReadCSV.Location = new System.Drawing.Point(31, 8);
@@ -316,76 +358,34 @@
             this.btReadCSV.UseVisualStyleBackColor = true;
             this.btReadCSV.Click += new System.EventHandler(this.btReadCSV_Click);
             // 
-            // lblTextStart
+            // SHA1_Hash
             // 
-            this.lblTextStart.AutoSize = true;
-            this.lblTextStart.Location = new System.Drawing.Point(199, 32);
-            this.lblTextStart.Name = "lblTextStart";
-            this.lblTextStart.Size = new System.Drawing.Size(110, 25);
-            this.lblTextStart.TabIndex = 2;
-            this.lblTextStart.Text = "Start Line:";
+            this.SHA1_Hash.HeaderText = "SHA1 Hash";
+            this.SHA1_Hash.MinimumWidth = 8;
+            this.SHA1_Hash.Name = "SHA1_Hash";
+            this.SHA1_Hash.Width = 150;
             // 
-            // numTextStart
+            // MD5_Hash
             // 
-            this.numTextStart.Location = new System.Drawing.Point(319, 26);
-            this.numTextStart.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numTextStart.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numTextStart.Name = "numTextStart";
-            this.numTextStart.Size = new System.Drawing.Size(120, 31);
-            this.numTextStart.TabIndex = 3;
-            this.numTextStart.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.MD5_Hash.HeaderText = "MD5Hash";
+            this.MD5_Hash.MinimumWidth = 8;
+            this.MD5_Hash.Name = "MD5_Hash";
+            this.MD5_Hash.Width = 150;
             // 
-            // numTextEnd
+            // SHA256_Hash
             // 
-            this.numTextEnd.Location = new System.Drawing.Point(588, 26);
-            this.numTextEnd.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numTextEnd.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numTextEnd.Name = "numTextEnd";
-            this.numTextEnd.Size = new System.Drawing.Size(120, 31);
-            this.numTextEnd.TabIndex = 5;
-            this.numTextEnd.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.SHA256_Hash.HeaderText = "SHA256 Hash";
+            this.SHA256_Hash.MinimumWidth = 8;
+            this.SHA256_Hash.Name = "SHA256_Hash";
+            this.SHA256_Hash.Width = 150;
             // 
-            // lblTextEnd
+            // RegisterDate
             // 
-            this.lblTextEnd.AutoSize = true;
-            this.lblTextEnd.Location = new System.Drawing.Point(468, 32);
-            this.lblTextEnd.Name = "lblTextEnd";
-            this.lblTextEnd.Size = new System.Drawing.Size(103, 25);
-            this.lblTextEnd.TabIndex = 4;
-            this.lblTextEnd.Text = "End Line:";
-            // 
-            // lblTextResult
-            // 
-            this.lblTextResult.AutoSize = true;
-            this.lblTextResult.Location = new System.Drawing.Point(735, 28);
-            this.lblTextResult.Name = "lblTextResult";
-            this.lblTextResult.Size = new System.Drawing.Size(130, 25);
-            this.lblTextResult.TabIndex = 6;
-            this.lblTextResult.Text = "กรุณาเลือกไฟล์";
+            this.RegisterDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.RegisterDate.HeaderText = "Date";
+            this.RegisterDate.MinimumWidth = 8;
+            this.RegisterDate.Name = "RegisterDate";
+            this.RegisterDate.Width = 102;
             // 
             // frmTextView
             // 
@@ -402,13 +402,13 @@
             this.tabcMain.ResumeLayout(false);
             this.tabpText.ResumeLayout(false);
             this.tabpText.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numTextEnd)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTextStart)).EndInit();
             this.tabpCSV.ResumeLayout(false);
             this.tabpCSV.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numEndRecord)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStartRecord)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTextStart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numTextEnd)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -426,10 +426,6 @@
 		private System.Windows.Forms.RichTextBox rtbShow;
 		private System.Windows.Forms.DataGridView dgvData;
 		private System.Windows.Forms.Button btReadCSV;
-		private System.Windows.Forms.DataGridViewTextBoxColumn RegisterDate;
-		private System.Windows.Forms.DataGridViewTextBoxColumn SHA256_Hash;
-		private System.Windows.Forms.DataGridViewTextBoxColumn MD5_Hash;
-		private System.Windows.Forms.DataGridViewTextBoxColumn SHA1_Hash;
         private System.Windows.Forms.Label lblStartRecord;
         private System.Windows.Forms.Label lblFileType;
         private System.Windows.Forms.NumericUpDown numEndRecord;
@@ -442,6 +438,10 @@
         private System.Windows.Forms.Label lblTextResult;
         private System.Windows.Forms.NumericUpDown numTextEnd;
         private System.Windows.Forms.Label lblTextEnd;
+        private System.Windows.Forms.DataGridViewTextBoxColumn RegisterDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SHA256_Hash;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MD5_Hash;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SHA1_Hash;
     }
 }
 

@@ -39,25 +39,26 @@ namespace FileProcessing
 {
     public partial class frmTextView : Form
     {
-        // หน้า Text แสดงข้อมูลได้ครั้งละไม่เกิน 1000 บรรทัด
-        private const int MaxTextRows = 1000;
+        // หน้า Text แสดงข้อมูลได้ครั้งละไม่เกิน 500 บรรทัด
+        private const int MaxTextRows = 500;
 
-        // เก็บจำนวนบรรทัดทั้งหมดและไฟล์ที่นับล่าสุด
         private int textTotalLines = 0;
         private string countedTextFilePath = string.Empty;
-
-        // ป้องกัน ValueChanged ทำงานซ้ำระหว่างที่โปรแกรมกำลังปรับค่า
         private bool updatingTextRange = false;
 
         public frmTextView()
         {
             InitializeComponent();
 
-            // ตั้งค่า DataGridView
+            // ตั้งค่า DataGridView หน้า CSV
             dgvData.AllowUserToAddRows = false;
             dgvData.ReadOnly = true;
             dgvData.RowHeadersVisible = false;
-            dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvData.SelectionMode =
+                DataGridViewSelectionMode.FullRowSelect;
+            dgvData.ColumnHeadersVisible = true;
+            dgvData.ColumnHeadersHeightSizeMode =
+                DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 
             // ตั้งค่าหน้า Text ก่อนเลือกไฟล์
             numTextStart.Minimum = 1;
@@ -73,8 +74,14 @@ namespace FileProcessing
             btRead.Enabled = false;
             lblTextResult.Text = "กรุณาเลือกไฟล์";
 
-            // ผูก Event ในโค้ด จึงไม่จำเป็นต้องผูก ValueChanged ใน Designer
+            /*
+             * ถ้าผูก ValueChanged ใน Designer ไว้แล้ว
+             * บรรทัด -= จะป้องกันไม่ให้ Event ถูกเรียกซ้ำ
+             */
+            numTextStart.ValueChanged -= numTextStart_ValueChanged;
             numTextStart.ValueChanged += numTextStart_ValueChanged;
+
+            numTextEnd.ValueChanged -= numTextEnd_ValueChanged;
             numTextEnd.ValueChanged += numTextEnd_ValueChanged;
         }
 
@@ -114,13 +121,17 @@ namespace FileProcessing
             try
             {
                 /*
-                 * หากผู้ใช้พิมพ์ Path เอง หรือเปลี่ยน Path หลังจากกด Browse
-                 * ให้โปรแกรมนับจำนวนบรรทัดใหม่ก่อน
+                 * กรณีพิมพ์ Path เอง หรือ Path เปลี่ยนจากไฟล์ที่เคยนับ
+                 * โปรแกรมจะนับจำนวนบรรทัดใหม่ก่อน
                  */
                 if (!string.Equals(
-                        countedTextFilePath,filePath,StringComparison.OrdinalIgnoreCase))
+                        countedTextFilePath,
+                        filePath,
+                        StringComparison.OrdinalIgnoreCase))
                 {
-                    lblTextResult.Text = "กำลังตรวจสอบจำนวนบรรทัด...";
+                    lblTextResult.Text =
+                        "กำลังตรวจสอบจำนวนบรรทัด...";
+
                     btRead.Enabled = false;
                     Cursor = Cursors.WaitCursor;
 
@@ -155,7 +166,8 @@ namespace FileProcessing
                     return;
                 }
 
-                if (startLine > textTotalLines || endLine > textTotalLines)
+                if (startLine > textTotalLines ||
+                    endLine > textTotalLines)
                 {
                     MessageBox.Show(
                         "ช่วงที่เลือกเกินจำนวนบรรทัดของไฟล์",
@@ -166,7 +178,8 @@ namespace FileProcessing
                     return;
                 }
 
-                int selectedLineCount = endLine - startLine + 1;
+                int selectedLineCount =
+                    endLine - startLine + 1;
 
                 if (selectedLineCount > MaxTextRows)
                 {
@@ -191,13 +204,17 @@ namespace FileProcessing
                 lblTextResult.Text = "กำลังอ่านข้อมูล...";
 
                 TextLoadResult result = await Task.Run(
-                    () => ReadTextRange(filePath, startLine, endLine));
+                    () => ReadTextRange(
+                        filePath,
+                        startLine,
+                        endLine));
 
                 rtbShow.Text = result.Content;
 
                 if (result.LoadedLineCount == 0)
                 {
-                    lblTextResult.Text = "ไม่พบข้อมูลในช่วงที่กำหนด";
+                    lblTextResult.Text =
+                        "ไม่พบข้อมูลในช่วงที่กำหนด";
 
                     MessageBox.Show(
                         "ไม่พบข้อมูลในช่วงบรรทัดที่กำหนด",
@@ -222,53 +239,61 @@ namespace FileProcessing
             catch (IOException ex)
             {
                 MessageBox.Show(
-                    "ไม่สามารถเปิดหรืออ่านไฟล์ได้\n" + ex.Message,
+                    "ไม่สามารถเปิดหรืออ่านไฟล์ได้\n" +
+                    ex.Message,
                     "File Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                lblTextResult.Text = "ไม่สามารถอ่านไฟล์ได้";
+                lblTextResult.Text =
+                    "ไม่สามารถอ่านไฟล์ได้";
             }
             catch (UnauthorizedAccessException ex)
             {
                 MessageBox.Show(
-                    "ไม่มีสิทธิ์เข้าถึงไฟล์\n" + ex.Message,
+                    "ไม่มีสิทธิ์เข้าถึงไฟล์\n" +
+                    ex.Message,
                     "Access Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                lblTextResult.Text = "ไม่มีสิทธิ์เข้าถึงไฟล์";
+                lblTextResult.Text =
+                    "ไม่มีสิทธิ์เข้าถึงไฟล์";
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "เกิดข้อผิดพลาด\n" + ex.Message,
+                    "เกิดข้อผิดพลาด\n" +
+                    ex.Message,
                     "Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                lblTextResult.Text = "เกิดข้อผิดพลาด";
+                lblTextResult.Text =
+                    "เกิดข้อผิดพลาด";
             }
             finally
             {
                 Cursor = Cursors.Default;
                 btBrowse.Enabled = true;
 
-                bool hasTextData = textTotalLines > 0;
-                btRead.Enabled = hasTextData;
-                numTextStart.Enabled = hasTextData;
-                numTextEnd.Enabled = hasTextData;
+                bool hasData = textTotalLines > 0;
+
+                btRead.Enabled = hasData;
+                numTextStart.Enabled = hasData;
+                numTextEnd.Enabled = hasData;
             }
         }
 
         /// <summary>
-        /// นับจำนวนบรรทัดทั้งหมดของไฟล์แบบอ่านทีละบรรทัด
+        /// นับจำนวนบรรทัดทั้งหมดแบบไม่โหลดไฟล์ทั้งก้อนเข้า RAM
         /// </summary>
         private int CountTextLines(string filePath)
         {
             int lineCount = 0;
 
-            using (StreamReader reader = new StreamReader(filePath))
+            using (StreamReader reader =
+                   new StreamReader(filePath))
             {
                 while (reader.ReadLine() != null)
                 {
@@ -280,10 +305,12 @@ namespace FileProcessing
         }
 
         /// <summary>
-        /// ตั้งค่า Maximum ของ NumericUpDown ให้เท่ากับจำนวนบรรทัดของไฟล์
-        /// และกำหนดช่วงเริ่มต้นไม่เกิน 500 บรรทัด
+        /// กำหนด Maximum ของ Start และ End
+        /// ให้เท่ากับจำนวนบรรทัดจริงของไฟล์
         /// </summary>
-        private void SetTextFileRange(string filePath, int totalLines)
+        private void SetTextFileRange(
+            string filePath,
+            int totalLines)
         {
             updatingTextRange = true;
 
@@ -292,7 +319,8 @@ namespace FileProcessing
                 textTotalLines = totalLines;
                 countedTextFilePath = filePath;
 
-                int maximumValue = Math.Max(1, totalLines);
+                int maximumValue =
+                    Math.Max(1, totalLines);
 
                 numTextStart.Minimum = 1;
                 numTextStart.Maximum = maximumValue;
@@ -303,7 +331,8 @@ namespace FileProcessing
 
                 if (totalLines > 0)
                 {
-                    numTextEnd.Value = Math.Min(totalLines, MaxTextRows);
+                    numTextEnd.Value =
+                        Math.Min(totalLines, MaxTextRows);
 
                     numTextStart.Enabled = true;
                     numTextEnd.Enabled = true;
@@ -324,7 +353,8 @@ namespace FileProcessing
                     numTextEnd.Enabled = false;
                     btRead.Enabled = false;
 
-                    lblTextResult.Text = "ไฟล์ไม่มีข้อมูล";
+                    lblTextResult.Text =
+                        "ไฟล์ไม่มีข้อมูล";
                 }
             }
             finally
@@ -341,12 +371,16 @@ namespace FileProcessing
             int startLine,
             int endLine)
         {
-            TextLoadResult result = new TextLoadResult();
-            StringBuilder content = new StringBuilder();
+            TextLoadResult result =
+                new TextLoadResult();
+
+            StringBuilder content =
+                new StringBuilder();
 
             int currentLineNumber = 0;
 
-            using (StreamReader reader = new StreamReader(filePath))
+            using (StreamReader reader =
+                   new StreamReader(filePath))
             {
                 string line;
 
@@ -365,8 +399,10 @@ namespace FileProcessing
                     }
 
                     content.AppendLine(line);
+
                     result.LoadedLineCount++;
-                    result.LastLineNumber = currentLineNumber;
+                    result.LastLineNumber =
+                        currentLineNumber;
                 }
             }
 
@@ -376,11 +412,14 @@ namespace FileProcessing
         }
 
         /// <summary>
-        /// เมื่อ Start Line เปลี่ยน ให้ตรวจว่า End Line ห่างไม่เกิน 500 บรรทัด
+        /// จำกัด End ไม่ให้ช่วงเกิน 500 บรรทัดเมื่อ Start เปลี่ยน
         /// </summary>
-        private void numTextStart_ValueChanged(object sender, EventArgs e)
+        private void numTextStart_ValueChanged(
+            object sender,
+            EventArgs e)
         {
-            if (updatingTextRange || textTotalLines <= 0)
+            if (updatingTextRange ||
+                textTotalLines <= 0)
             {
                 return;
             }
@@ -389,20 +428,26 @@ namespace FileProcessing
 
             try
             {
-                int startLine = (int)numTextStart.Value;
-                int endLine = (int)numTextEnd.Value;
+                int startLine =
+                    (int)numTextStart.Value;
 
-                int maximumAllowedEnd = Math.Min(
-                    textTotalLines,
-                    startLine + MaxTextRows - 1);
+                int endLine =
+                    (int)numTextEnd.Value;
+
+                int maximumAllowedEnd =
+                    Math.Min(
+                        textTotalLines,
+                        startLine + MaxTextRows - 1);
 
                 if (endLine < startLine)
                 {
-                    numTextEnd.Value = startLine;
+                    numTextEnd.Value =
+                        startLine;
                 }
                 else if (endLine > maximumAllowedEnd)
                 {
-                    numTextEnd.Value = maximumAllowedEnd;
+                    numTextEnd.Value =
+                        maximumAllowedEnd;
                 }
 
                 ShowTextRangeInformation();
@@ -414,11 +459,14 @@ namespace FileProcessing
         }
 
         /// <summary>
-        /// เมื่อ End Line เปลี่ยน ให้ตรวจว่าไม่น้อยกว่า Start และช่วงไม่เกิน 500
+        /// ป้องกัน End น้อยกว่า Start หรือช่วงเกิน 500 บรรทัด
         /// </summary>
-        private void numTextEnd_ValueChanged(object sender, EventArgs e)
+        private void numTextEnd_ValueChanged(
+            object sender,
+            EventArgs e)
         {
-            if (updatingTextRange || textTotalLines <= 0)
+            if (updatingTextRange ||
+                textTotalLines <= 0)
             {
                 return;
             }
@@ -427,22 +475,29 @@ namespace FileProcessing
 
             try
             {
-                int startLine = (int)numTextStart.Value;
-                int endLine = (int)numTextEnd.Value;
+                int startLine =
+                    (int)numTextStart.Value;
+
+                int endLine =
+                    (int)numTextEnd.Value;
 
                 if (endLine < startLine)
                 {
-                    numTextEnd.Value = startLine;
+                    numTextEnd.Value =
+                        startLine;
+
                     endLine = startLine;
                 }
 
-                int maximumAllowedEnd = Math.Min(
-                    textTotalLines,
-                    startLine + MaxTextRows - 1);
+                int maximumAllowedEnd =
+                    Math.Min(
+                        textTotalLines,
+                        startLine + MaxTextRows - 1);
 
                 if (endLine > maximumAllowedEnd)
                 {
-                    numTextEnd.Value = maximumAllowedEnd;
+                    numTextEnd.Value =
+                        maximumAllowedEnd;
                 }
 
                 ShowTextRangeInformation();
@@ -454,7 +509,7 @@ namespace FileProcessing
         }
 
         /// <summary>
-        /// แสดงรายละเอียดช่วงบรรทัดที่เลือก
+        /// แสดงจำนวนบรรทัดในช่วงที่เลือก
         /// </summary>
         private void ShowTextRangeInformation()
         {
@@ -463,9 +518,14 @@ namespace FileProcessing
                 return;
             }
 
-            int startLine = (int)numTextStart.Value;
-            int endLine = (int)numTextEnd.Value;
-            int selectedCount = endLine - startLine + 1;
+            int startLine =
+                (int)numTextStart.Value;
+
+            int endLine =
+                (int)numTextEnd.Value;
+
+            int selectedCount =
+                endLine - startLine + 1;
 
             lblTextResult.Text =
                 "เลือกบรรทัด " +
@@ -479,6 +539,37 @@ namespace FileProcessing
                 " บรรทัด";
         }
 
+        /// <summary>
+        /// ล้างสถานะของหน้า Text
+        /// </summary>
+        private void ResetTextFileInformation()
+        {
+            updatingTextRange = true;
+
+            try
+            {
+                textTotalLines = 0;
+                countedTextFilePath =
+                    string.Empty;
+
+                numTextStart.Minimum = 1;
+                numTextStart.Maximum = 1;
+                numTextStart.Value = 1;
+                numTextStart.Enabled = false;
+
+                numTextEnd.Minimum = 1;
+                numTextEnd.Maximum = 1;
+                numTextEnd.Value = 1;
+                numTextEnd.Enabled = false;
+
+                btRead.Enabled = false;
+            }
+            finally
+            {
+                updatingTextRange = false;
+            }
+        }
+
         // =========================================================
         // CSV FILE
         // =========================================================
@@ -486,9 +577,12 @@ namespace FileProcessing
         /// <summary>
         /// โหลด CSV ตามช่วง m-n และกรองตามประเภทไฟล์
         /// </summary>
-        private async void btReadCSV_Click(object sender, EventArgs e)
+        private async void btReadCSV_Click(
+            object sender,
+            EventArgs e)
         {
-            string filePath = tbFileName.Text.Trim();
+            string filePath =
+                tbFileName.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -512,8 +606,11 @@ namespace FileProcessing
                 return;
             }
 
-            int startRecord = (int)numStartRecord.Value;
-            int endRecord = (int)numEndRecord.Value;
+            int startRecord =
+                (int)numStartRecord.Value;
+
+            int endRecord =
+                (int)numEndRecord.Value;
 
             if (endRecord < startRecord)
             {
@@ -526,12 +623,15 @@ namespace FileProcessing
                 return;
             }
 
-            string fileTypeFilter = txtFileType.Text.Trim();
+            string fileTypeFilter =
+                txtFileType.Text.Trim();
 
             btReadCSV.Enabled = false;
             btBrowse.Enabled = false;
 
-            lblResult.Text = "กำลังโหลดข้อมูล...";
+            lblResult.Text =
+                "กำลังโหลดข้อมูล...";
+
             Cursor = Cursors.WaitCursor;
 
             dgvData.Rows.Clear();
@@ -539,18 +639,20 @@ namespace FileProcessing
 
             try
             {
-                CsvLoadResult result = await Task.Run(
-                    () => ReadCsvFile(
-                        filePath,
-                        startRecord,
-                        endRecord,
-                        fileTypeFilter));
+                CsvLoadResult result =
+                    await Task.Run(
+                        () => ReadCsvFile(
+                            filePath,
+                            startRecord,
+                            endRecord,
+                            fileTypeFilter));
 
                 ShowCsvResult(result);
 
                 if (result.Rows.Count == 0)
                 {
-                    lblResult.Text = "ไม่พบข้อมูลที่ตรงกับเงื่อนไข";
+                    lblResult.Text =
+                        "ไม่พบข้อมูลที่ตรงกับเงื่อนไข";
 
                     MessageBox.Show(
                         "ไม่พบข้อมูลที่ตรงกับช่วงหรือประเภทไฟล์ที่กำหนด",
@@ -585,37 +687,44 @@ namespace FileProcessing
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                lblResult.Text = "รูปแบบไฟล์ไม่ถูกต้อง";
+                lblResult.Text =
+                    "รูปแบบไฟล์ไม่ถูกต้อง";
             }
             catch (IOException ex)
             {
                 MessageBox.Show(
-                    "ไม่สามารถเปิดไฟล์ได้\n" + ex.Message,
+                    "ไม่สามารถเปิดไฟล์ได้\n" +
+                    ex.Message,
                     "File Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                lblResult.Text = "ไม่สามารถเปิดไฟล์ได้";
+                lblResult.Text =
+                    "ไม่สามารถเปิดไฟล์ได้";
             }
             catch (UnauthorizedAccessException ex)
             {
                 MessageBox.Show(
-                    "ไม่มีสิทธิ์เข้าถึงไฟล์\n" + ex.Message,
+                    "ไม่มีสิทธิ์เข้าถึงไฟล์\n" +
+                    ex.Message,
                     "Access Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                lblResult.Text = "ไม่มีสิทธิ์เข้าถึงไฟล์";
+                lblResult.Text =
+                    "ไม่มีสิทธิ์เข้าถึงไฟล์";
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "เกิดข้อผิดพลาด\n" + ex.Message,
+                    "เกิดข้อผิดพลาด\n" +
+                    ex.Message,
                     "Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                lblResult.Text = "เกิดข้อผิดพลาด";
+                lblResult.Text =
+                    "เกิดข้อผิดพลาด";
             }
             finally
             {
@@ -626,7 +735,11 @@ namespace FileProcessing
         }
 
         /// <summary>
-        /// อ่าน CSV ทีละบรรทัด ไม่โหลดไฟล์ทั้งหมดเข้า RAM
+        /// อ่าน CSV ทีละบรรทัด และใช้ชื่อคอลัมน์จาก Header ในไฟล์
+        /// รองรับ Header รูปแบบ:
+        /// # "first_seen_utc","sha256_hash",...
+        /// #HEADER: "first_seen_utc","sha256_hash",...
+        /// "first_seen_utc","sha256_hash",...
         /// </summary>
         private CsvLoadResult ReadCsvFile(
             string filePath,
@@ -634,13 +747,15 @@ namespace FileProcessing
             int endRecord,
             string fileTypeFilter)
         {
-            CsvLoadResult result = new CsvLoadResult();
+            CsvLoadResult result =
+                new CsvLoadResult();
 
             string[] headers = null;
             int fileTypeIndex = -1;
             int currentRecord = 0;
 
-            using (StreamReader reader = new StreamReader(filePath))
+            using (StreamReader reader =
+                   new StreamReader(filePath))
             {
                 string line;
 
@@ -651,79 +766,99 @@ namespace FileProcessing
                         continue;
                     }
 
-                    // Header แบบที่ใช้ในไฟล์ตัวอย่างของโปรเจกต์
-                    if (line.StartsWith(
-                        "#HEADER:",
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        string headerText = line.Substring(8);
-                        headers = ParseCsvLine(headerText);
-
-                        for (int i = 0; i < headers.Length; i++)
-                        {
-                            headers[i] = CleanValue(headers[i]);
-                        }
-
-                        fileTypeIndex = FindColumnIndex(
-                            headers,
-                            "file_type_guess");
-
-                        result.Headers = headers;
-
-                        continue;
-                    }
-
-                    // ข้าม Comment
-                    if (line.StartsWith("#"))
-                    {
-                        continue;
-                    }
-
-                    string[] values = ParseCsvLine(line);
+                    string normalizedLine =
+                        line.TrimStart(
+                            '\uFEFF',
+                            ' ',
+                            '\t');
 
                     /*
-                     * รองรับ CSV ที่ใช้ Header ปกติในบรรทัดแรก
-                     * โดยตรวจหาชื่อคอลัมน์ file_type_guess
+                     * ต้องตรวจ Header ก่อนข้าม Comment
+                     * เพราะ Header ของไฟล์จริงขึ้นต้นด้วย #
                      */
-                    if (headers == null)
+                    if (normalizedLine.StartsWith("#"))
                     {
-                        string[] possibleHeaders = new string[values.Length];
+                        string possibleHeaderText =
+                            normalizedLine
+                                .Substring(1)
+                                .Trim();
 
-                        for (int i = 0; i < values.Length; i++)
+                        if (possibleHeaderText.StartsWith(
+                            "HEADER:",
+                            StringComparison.OrdinalIgnoreCase))
                         {
-                            possibleHeaders[i] = CleanValue(values[i]);
+                            possibleHeaderText =
+                                possibleHeaderText
+                                    .Substring("HEADER:".Length)
+                                    .Trim();
                         }
 
-                        int possibleFileTypeIndex = FindColumnIndex(
-                            possibleHeaders,
-                            "file_type_guess");
+                        string[] possibleHeaders =
+                            ParseCsvLine(
+                                possibleHeaderText);
 
-                        if (possibleFileTypeIndex >= 0)
+                        CleanValues(possibleHeaders);
+
+                        if (IsMalwareBazaarHeader(
+                                possibleHeaders))
                         {
-                            headers = possibleHeaders;
-                            fileTypeIndex = possibleFileTypeIndex;
-                            result.Headers = headers;
+                            headers =
+                                possibleHeaders;
+
+                            fileTypeIndex =
+                                FindColumnIndex(
+                                    headers,
+                                    "file_type_guess");
+
+                            result.Headers =
+                                headers;
+
+                            // Header ไม่นับเป็น Record
                             continue;
                         }
 
-                        // หากไม่มี Header ให้สร้างชื่อคอลัมน์อัตโนมัติ
-                        headers = new string[values.Length];
-
-                        for (int i = 0; i < headers.Length; i++)
-                        {
-                            headers[i] = "Column " + (i + 1);
-                        }
-
-                        // MalwareBazaar file_type_guess ปกติอยู่ตำแหน่ง Index 6
-                        if (values.Length > 6)
-                        {
-                            fileTypeIndex = 6;
-                        }
-
-                        result.Headers = headers;
+                        // Comment ทั่วไป
+                        continue;
                     }
 
-                    // นับเฉพาะ Record ข้อมูล ไม่รวม Header, Comment และบรรทัดว่าง
+                    string[] values =
+                        ParseCsvLine(normalizedLine);
+
+                    /*
+                     * รองรับ Header แบบ CSV ปกติที่ไม่ขึ้นต้นด้วย #
+                     */
+                    if (headers == null)
+                    {
+                        string[] possibleHeaders =
+                            CopyAndCleanValues(values);
+
+                        if (IsMalwareBazaarHeader(
+                                possibleHeaders))
+                        {
+                            headers =
+                                possibleHeaders;
+
+                            fileTypeIndex =
+                                FindColumnIndex(
+                                    headers,
+                                    "file_type_guess");
+
+                            result.Headers =
+                                headers;
+
+                            continue;
+                        }
+
+                        /*
+                         * ไม่สร้าง Column 1, Column 2
+                         * หากไม่พบ Header ให้แจ้ง Error
+                         */
+                        throw new InvalidDataException(
+                            "ไม่พบ Header ของไฟล์ CSV\n" +
+                            "Header ต้องมีคอลัมน์ first_seen_utc, " +
+                            "sha256_hash และ file_type_guess");
+                    }
+
                     currentRecord++;
 
                     if (currentRecord < startRecord)
@@ -736,19 +871,14 @@ namespace FileProcessing
                         break;
                     }
 
-                    if (values.Length == 0)
-                    {
-                        result.InvalidRowCount++;
-                        continue;
-                    }
-
-                    // กรองประเภทไฟล์
-                    if (!string.IsNullOrWhiteSpace(fileTypeFilter))
+                    if (!string.IsNullOrWhiteSpace(
+                            fileTypeFilter))
                     {
                         if (fileTypeIndex < 0)
                         {
                             throw new InvalidDataException(
-                                "ไม่พบคอลัมน์ file_type_guess ในไฟล์ CSV");
+                                "ไม่พบคอลัมน์ file_type_guess " +
+                                "ในไฟล์ CSV");
                         }
 
                         if (fileTypeIndex >= values.Length)
@@ -758,12 +888,14 @@ namespace FileProcessing
                         }
 
                         string currentFileType =
-                            CleanValue(values[fileTypeIndex]);
+                            CleanValue(
+                                values[fileTypeIndex]);
 
-                        bool isMatched = string.Equals(
-                            currentFileType,
-                            fileTypeFilter,
-                            StringComparison.OrdinalIgnoreCase);
+                        bool isMatched =
+                            string.Equals(
+                                currentFileType,
+                                fileTypeFilter,
+                                StringComparison.OrdinalIgnoreCase);
 
                         if (!isMatched)
                         {
@@ -771,18 +903,25 @@ namespace FileProcessing
                         }
                     }
 
-                    object[] rowData = new object[headers.Length + 1];
-                    rowData[0] = currentRecord;
+                    object[] rowData =
+                        new object[headers.Length + 1];
 
-                    for (int i = 0; i < headers.Length; i++)
+                    rowData[0] =
+                        currentRecord;
+
+                    for (int i = 0;
+                         i < headers.Length;
+                         i++)
                     {
                         if (i < values.Length)
                         {
-                            rowData[i + 1] = CleanValue(values[i]);
+                            rowData[i + 1] =
+                                CleanValue(values[i]);
                         }
                         else
                         {
-                            rowData[i + 1] = string.Empty;
+                            rowData[i + 1] =
+                                string.Empty;
                         }
                     }
 
@@ -790,15 +929,89 @@ namespace FileProcessing
                 }
             }
 
-            result.LastRecordRead = currentRecord;
+            if (headers == null ||
+                headers.Length == 0)
+            {
+                throw new InvalidDataException(
+                    "ไม่พบ Header ภายในไฟล์ CSV");
+            }
+
+            result.LastRecordRead =
+                currentRecord;
 
             return result;
         }
 
         /// <summary>
-        /// นำผลลัพธ์ CSV ไปแสดงใน DataGridView
+        /// ตรวจว่าเป็น Header ของ MalwareBazaar หรือไม่
         /// </summary>
-        private void ShowCsvResult(CsvLoadResult result)
+        private bool IsMalwareBazaarHeader(
+            string[] values)
+        {
+            if (values == null ||
+                values.Length == 0)
+            {
+                return false;
+            }
+
+            return
+                FindColumnIndex(
+                    values,
+                    "first_seen_utc") >= 0 &&
+                FindColumnIndex(
+                    values,
+                    "sha256_hash") >= 0 &&
+                FindColumnIndex(
+                    values,
+                    "file_type_guess") >= 0;
+        }
+
+        /// <summary>
+        /// ทำความสะอาดค่าทุกช่องใน Array
+        /// </summary>
+        private void CleanValues(
+            string[] values)
+        {
+            if (values == null)
+            {
+                return;
+            }
+
+            for (int i = 0;
+                 i < values.Length;
+                 i++)
+            {
+                values[i] =
+                    CleanValue(values[i]);
+            }
+        }
+
+        /// <summary>
+        /// คัดลอกและทำความสะอาดค่าจาก Array
+        /// </summary>
+        private string[] CopyAndCleanValues(
+            string[] values)
+        {
+            string[] result =
+                new string[values.Length];
+
+            for (int i = 0;
+                 i < values.Length;
+                 i++)
+            {
+                result[i] =
+                    CleanValue(values[i]);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// แสดง CSV ใน DataGridView
+        /// โดยใช้ชื่อคอลัมน์จากไฟล์เท่านั้น
+        /// </summary>
+        private void ShowCsvResult(
+            CsvLoadResult result)
         {
             dgvData.SuspendLayout();
 
@@ -806,26 +1019,73 @@ namespace FileProcessing
             {
                 dgvData.Rows.Clear();
                 dgvData.Columns.Clear();
+                dgvData.ColumnHeadersVisible = true;
 
-                dgvData.Columns.Add(
-                    "colRecordNumber",
-                    "Record No.");
-
-                dgvData.Columns[0].Width = 90;
-
-                for (int i = 0; i < result.Headers.Length; i++)
+                if (result.Headers == null ||
+                    result.Headers.Length == 0)
                 {
-                    string columnName = "colData" + i;
-                    string headerText = result.Headers[i];
-
-                    dgvData.Columns.Add(columnName, headerText);
-                    dgvData.Columns[i + 1].Width = 150;
+                    throw new InvalidDataException(
+                        "ไม่พบชื่อคอลัมน์จากไฟล์ CSV");
                 }
 
-                foreach (object[] row in result.Rows)
+                // คอลัมน์นี้โปรแกรมเพิ่มเองเพื่อแสดงลำดับ Record
+                DataGridViewTextBoxColumn recordColumn =
+                    new DataGridViewTextBoxColumn();
+
+                recordColumn.Name =
+                    "colRecordNumber";
+
+                recordColumn.HeaderText =
+                    "Record No.";
+
+                recordColumn.Width = 100;
+
+                recordColumn.SortMode =
+                    DataGridViewColumnSortMode.NotSortable;
+
+                dgvData.Columns.Add(recordColumn);
+
+                // ใช้ชื่อ Header ที่อ่านจากไฟล์ CSV
+                for (int i = 0;
+                     i < result.Headers.Length;
+                     i++)
+                {
+                    string headerText =
+                        CleanValue(
+                            result.Headers[i]);
+
+                    if (string.IsNullOrWhiteSpace(
+                            headerText))
+                    {
+                        throw new InvalidDataException(
+                            "พบชื่อคอลัมน์ว่างที่ตำแหน่ง " +
+                            (i + 1));
+                    }
+
+                    DataGridViewTextBoxColumn column =
+                        new DataGridViewTextBoxColumn();
+
+                    column.Name =
+                        "colData" + i;
+
+                    column.HeaderText =
+                        headerText;
+
+                    column.Width = 160;
+
+                    column.SortMode =
+                        DataGridViewColumnSortMode.NotSortable;
+
+                    dgvData.Columns.Add(column);
+                }
+
+                foreach (object[] row
+                         in result.Rows)
                 {
                     dgvData.Rows.Add(row);
                 }
+
+                dgvData.AutoResizeColumnHeadersHeight();
             }
             finally
             {
@@ -834,13 +1094,20 @@ namespace FileProcessing
         }
 
         /// <summary>
-        /// ค้นหาตำแหน่งคอลัมน์จากชื่อ Header
+        /// ค้นหา Index ของชื่อคอลัมน์
         /// </summary>
         private int FindColumnIndex(
             string[] headers,
             string targetColumn)
         {
-            for (int i = 0; i < headers.Length; i++)
+            if (headers == null)
+            {
+                return -1;
+            }
+
+            for (int i = 0;
+                 i < headers.Length;
+                 i++)
             {
                 if (string.Equals(
                     CleanValue(headers[i]),
@@ -855,35 +1122,47 @@ namespace FileProcessing
         }
 
         /// <summary>
-        /// ลบช่องว่างและเครื่องหมายคำพูดรอบข้อมูล
+        /// ลบ BOM ช่องว่าง และเครื่องหมายคำพูดรอบข้อมูล
         /// </summary>
-        private string CleanValue(string value)
+        private string CleanValue(
+            string value)
         {
             if (value == null)
             {
                 return string.Empty;
             }
 
-            return value.Trim().Trim('"');
+            return value
+                .Trim()
+                .TrimStart('\uFEFF')
+                .Trim()
+                .Trim('"')
+                .Trim();
         }
 
         /// <summary>
-        /// แยก CSV โดยรองรับเครื่องหมายคำพูดและคอมมาภายในข้อมูล
+        /// แยก CSV โดยรองรับคอมมาภายในเครื่องหมายคำพูด
         /// </summary>
-        private string[] ParseCsvLine(string line)
+        private string[] ParseCsvLine(
+            string line)
         {
-            List<string> values = new List<string>();
-            StringBuilder currentValue = new StringBuilder();
+            List<string> values =
+                new List<string>();
+
+            StringBuilder currentValue =
+                new StringBuilder();
 
             bool insideQuotes = false;
 
-            for (int i = 0; i < line.Length; i++)
+            for (int i = 0;
+                 i < line.Length;
+                 i++)
             {
-                char currentCharacter = line[i];
+                char currentCharacter =
+                    line[i];
 
                 if (currentCharacter == '"')
                 {
-                    // เครื่องหมายคำพูดซ้อน เช่น "example ""test"" file"
                     if (insideQuotes &&
                         i + 1 < line.Length &&
                         line[i + 1] == '"')
@@ -893,137 +1172,138 @@ namespace FileProcessing
                     }
                     else
                     {
-                        insideQuotes = !insideQuotes;
+                        insideQuotes =
+                            !insideQuotes;
                     }
                 }
-                else if (currentCharacter == ',' && !insideQuotes)
+                else if (
+                    currentCharacter == ',' &&
+                    !insideQuotes)
                 {
-                    values.Add(currentValue.ToString().Trim());
+                    values.Add(
+                        currentValue
+                            .ToString()
+                            .Trim());
+
                     currentValue.Clear();
                 }
                 else
                 {
-                    currentValue.Append(currentCharacter);
+                    currentValue.Append(
+                        currentCharacter);
                 }
             }
 
-            values.Add(currentValue.ToString().Trim());
+            values.Add(
+                currentValue
+                    .ToString()
+                    .Trim());
 
             return values.ToArray();
         }
 
         // =========================================================
-        // FILE BROWSE
+        // BROWSE FILE
         // =========================================================
 
         /// <summary>
-        /// เลือกไฟล์และนับจำนวนบรรทัดสำหรับหน้า Text
+        /// เลือกไฟล์ และนับจำนวนบรรทัดสำหรับหน้า Text
         /// </summary>
-        private async void btBrowse_Click(object sender, EventArgs e)
+        private async void btBrowse_Click(
+            object sender,
+            EventArgs e)
         {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (OpenFileDialog openFileDialog =
+                   new OpenFileDialog())
             {
                 openFileDialog.Filter =
                     "CSV Files (*.csv)|*.csv|" +
                     "Text Files (*.txt)|*.txt|" +
                     "All Files (*.*)|*.*";
 
-                openFileDialog.Title = "เลือกไฟล์ข้อมูล";
+                openFileDialog.Title =
+                    "เลือกไฟล์ข้อมูล";
 
-                if (openFileDialog.ShowDialog() != DialogResult.OK)
+                if (openFileDialog.ShowDialog() !=
+                    DialogResult.OK)
                 {
                     return;
                 }
 
-                string selectedFile = openFileDialog.FileName;
-                tbFileName.Text = selectedFile;
+                string selectedFile =
+                    openFileDialog.FileName;
+
+                tbFileName.Text =
+                    selectedFile;
 
                 btBrowse.Enabled = false;
                 btRead.Enabled = false;
                 numTextStart.Enabled = false;
                 numTextEnd.Enabled = false;
 
-                lblTextResult.Text = "กำลังตรวจสอบจำนวนบรรทัด...";
+                lblTextResult.Text =
+                    "กำลังตรวจสอบจำนวนบรรทัด...";
+
                 Cursor = Cursors.WaitCursor;
 
                 try
                 {
-                    int totalLines = await Task.Run(
-                        () => CountTextLines(selectedFile));
+                    int totalLines =
+                        await Task.Run(
+                            () => CountTextLines(
+                                selectedFile));
 
-                    SetTextFileRange(selectedFile, totalLines);
+                    SetTextFileRange(
+                        selectedFile,
+                        totalLines);
                 }
                 catch (IOException ex)
                 {
                     ResetTextFileInformation();
 
                     MessageBox.Show(
-                        "ไม่สามารถอ่านไฟล์ได้\n" + ex.Message,
+                        "ไม่สามารถอ่านไฟล์ได้\n" +
+                        ex.Message,
                         "File Error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
 
-                    lblTextResult.Text = "ไม่สามารถอ่านไฟล์ได้";
+                    lblTextResult.Text =
+                        "ไม่สามารถอ่านไฟล์ได้";
                 }
                 catch (UnauthorizedAccessException ex)
                 {
                     ResetTextFileInformation();
 
                     MessageBox.Show(
-                        "ไม่มีสิทธิ์เข้าถึงไฟล์\n" + ex.Message,
+                        "ไม่มีสิทธิ์เข้าถึงไฟล์\n" +
+                        ex.Message,
                         "Access Error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
 
-                    lblTextResult.Text = "ไม่มีสิทธิ์เข้าถึงไฟล์";
+                    lblTextResult.Text =
+                        "ไม่มีสิทธิ์เข้าถึงไฟล์";
                 }
                 catch (Exception ex)
                 {
                     ResetTextFileInformation();
 
                     MessageBox.Show(
-                        "เกิดข้อผิดพลาด\n" + ex.Message,
+                        "เกิดข้อผิดพลาด\n" +
+                        ex.Message,
                         "Error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
 
-                    lblTextResult.Text = "เกิดข้อผิดพลาด";
+                    lblTextResult.Text =
+                        "เกิดข้อผิดพลาด";
                 }
                 finally
                 {
                     Cursor = Cursors.Default;
                     btBrowse.Enabled = true;
                 }
-            }
-        }
-
-        /// <summary>
-        /// ล้างข้อมูลการนับบรรทัดเมื่อเลือกไฟล์ไม่สำเร็จ
-        /// </summary>
-        private void ResetTextFileInformation()
-        {
-            updatingTextRange = true;
-
-            try
-            {
-                textTotalLines = 0;
-                countedTextFilePath = string.Empty;
-
-                numTextStart.Minimum = 1;
-                numTextStart.Maximum = 1;
-                numTextStart.Value = 1;
-                numTextStart.Enabled = false;
-
-                numTextEnd.Minimum = 1;
-                numTextEnd.Maximum = 1;
-                numTextEnd.Value = 1;
-                numTextEnd.Enabled = false;
-
-                btRead.Enabled = false;
-            }
-            finally
-            {
-                updatingTextRange = false;
             }
         }
 
@@ -1054,8 +1334,12 @@ namespace FileProcessing
 
             public CsvLoadResult()
             {
-                Headers = new string[0];
-                Rows = new List<object[]>();
+                Headers =
+                    new string[0];
+
+                Rows =
+                    new List<object[]>();
+
                 InvalidRowCount = 0;
                 LastRecordRead = 0;
             }
