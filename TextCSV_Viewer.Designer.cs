@@ -49,12 +49,19 @@
             this.MD5_Hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SHA1_Hash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btReadCSV = new System.Windows.Forms.Button();
+            this.lblTextStart = new System.Windows.Forms.Label();
+            this.numTextStart = new System.Windows.Forms.NumericUpDown();
+            this.numTextEnd = new System.Windows.Forms.NumericUpDown();
+            this.lblTextEnd = new System.Windows.Forms.Label();
+            this.lblTextResult = new System.Windows.Forms.Label();
             this.tabcMain.SuspendLayout();
             this.tabpText.SuspendLayout();
             this.tabpCSV.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numEndRecord)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStartRecord)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTextStart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTextEnd)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -94,7 +101,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabcMain.Controls.Add(this.tabpText);
             this.tabcMain.Controls.Add(this.tabpCSV);
-            this.tabcMain.Location = new System.Drawing.Point(16, 59);
+            this.tabcMain.Location = new System.Drawing.Point(19, 59);
             this.tabcMain.Margin = new System.Windows.Forms.Padding(4);
             this.tabcMain.Name = "tabcMain";
             this.tabcMain.SelectedIndex = 0;
@@ -103,6 +110,11 @@
             // 
             // tabpText
             // 
+            this.tabpText.Controls.Add(this.lblTextResult);
+            this.tabpText.Controls.Add(this.numTextEnd);
+            this.tabpText.Controls.Add(this.lblTextEnd);
+            this.tabpText.Controls.Add(this.numTextStart);
+            this.tabpText.Controls.Add(this.lblTextStart);
             this.tabpText.Controls.Add(this.rtbShow);
             this.tabpText.Controls.Add(this.btRead);
             this.tabpText.Location = new System.Drawing.Point(8, 39);
@@ -304,6 +316,77 @@
             this.btReadCSV.UseVisualStyleBackColor = true;
             this.btReadCSV.Click += new System.EventHandler(this.btReadCSV_Click);
             // 
+            // lblTextStart
+            // 
+            this.lblTextStart.AutoSize = true;
+            this.lblTextStart.Location = new System.Drawing.Point(199, 32);
+            this.lblTextStart.Name = "lblTextStart";
+            this.lblTextStart.Size = new System.Drawing.Size(110, 25);
+            this.lblTextStart.TabIndex = 2;
+            this.lblTextStart.Text = "Start Line:";
+            // 
+            // numTextStart
+            // 
+            this.numTextStart.Location = new System.Drawing.Point(319, 26);
+            this.numTextStart.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numTextStart.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numTextStart.Name = "numTextStart";
+            this.numTextStart.Size = new System.Drawing.Size(120, 31);
+            this.numTextStart.TabIndex = 3;
+            this.numTextStart.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // numTextEnd
+            // 
+            this.numTextEnd.Location = new System.Drawing.Point(588, 26);
+            this.numTextEnd.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numTextEnd.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numTextEnd.Name = "numTextEnd";
+            this.numTextEnd.Size = new System.Drawing.Size(120, 31);
+            this.numTextEnd.TabIndex = 5;
+            this.numTextEnd.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // lblTextEnd
+            // 
+            this.lblTextEnd.AutoSize = true;
+            this.lblTextEnd.Location = new System.Drawing.Point(468, 32);
+            this.lblTextEnd.Name = "lblTextEnd";
+            this.lblTextEnd.Size = new System.Drawing.Size(103, 25);
+            this.lblTextEnd.TabIndex = 4;
+            this.lblTextEnd.Text = "End Line:";
+            // 
+            // lblTextResult
+            // 
+            this.lblTextResult.AutoSize = true;
+            this.lblTextResult.Location = new System.Drawing.Point(735, 28);
+            this.lblTextResult.Name = "lblTextResult";
+            this.lblTextResult.Size = new System.Drawing.Size(130, 25);
+            this.lblTextResult.TabIndex = 6;
+            this.lblTextResult.Text = "กรุณาเลือกไฟล์";
+            // 
             // frmTextView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
@@ -315,15 +398,17 @@
             this.Controls.Add(this.label1);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmTextView";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Text/CSV viewer";
             this.tabcMain.ResumeLayout(false);
             this.tabpText.ResumeLayout(false);
+            this.tabpText.PerformLayout();
             this.tabpCSV.ResumeLayout(false);
             this.tabpCSV.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numEndRecord)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStartRecord)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTextStart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numTextEnd)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -352,6 +437,11 @@
         private System.Windows.Forms.NumericUpDown numStartRecord;
         private System.Windows.Forms.TextBox txtFileType;
         private System.Windows.Forms.Label lblResult;
+        private System.Windows.Forms.Label lblTextStart;
+        private System.Windows.Forms.NumericUpDown numTextStart;
+        private System.Windows.Forms.Label lblTextResult;
+        private System.Windows.Forms.NumericUpDown numTextEnd;
+        private System.Windows.Forms.Label lblTextEnd;
     }
 }
 
